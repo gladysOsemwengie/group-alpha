@@ -1,0 +1,12 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+/modules.xml
+/vcs.xml
+/misc.xml
+/AdvSoftEng.iml
+# Datasource local storage ignored files
+/../../../../../../:\Users\gdys4\IdeaProjects\AdvSoftEng\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
