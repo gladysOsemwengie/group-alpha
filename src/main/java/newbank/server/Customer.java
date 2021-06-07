@@ -5,6 +5,7 @@ import java.util.ArrayList;
 public class Customer {
 	
 	private ArrayList<Account> accounts;
+
 	
 	public Customer() {
 		accounts = new ArrayList<>();
