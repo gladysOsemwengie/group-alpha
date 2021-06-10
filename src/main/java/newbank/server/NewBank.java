@@ -9,7 +9,7 @@ public class NewBank {
 	private static final NewBank bank = new NewBank();
 	private HashMap<String,Customer> customers;
 
-	private static final HashMap<String, String> customerAuthenticationDetails = new HashMap<>(){
+	private static final HashMap<String, String> customerAuthenticationDetails = new HashMap<String, String>(){
 		{
 			//key is Username, Value is password
 			put("Bhagy", "bhagy");
