@@ -63,17 +63,20 @@ public class NewBank {
 	public synchronized String processRequest(CustomerID customer, String request) {
 		if(customers.containsKey(customer.getKey())) {
 			switch(request) {
-			case "SHOWMYACCOUNTS" : return showMyAccounts(customer);
-			case "NEWACCOUNT" :
-					System.out.println("need to create this method");
-			case "MOVE" :
-				System.out.println("need to create this method");
-			case "PAY" :
-				System.out.println("need to create this method");
-			default : return "FAIL";
+			    case "SHOWMYACCOUNTS" : return showMyAccounts(customer);
+			    case "NEWACCOUNT" :
+			        System.out.println("need to create NEWACCOUNT method");
+					return "Dear client we need to create NEWACCOUNT method";
+			    case "MOVE" :
+				    System.out.println("need to create MOVE method");
+					return "Dear client we need to create MOVE method";
+			    case "PAY" :
+					System.out.println("need to create PAY method");
+					return "Dear client we need to create the PAY method";
+			    default : return "That command does not exist please try again";
 			}
 		}
-		return "FAIL";
+		return "FAIL outside";
 	}
 	
 	private String showMyAccounts(CustomerID customer) {
