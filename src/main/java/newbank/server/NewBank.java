@@ -60,13 +60,15 @@ public class NewBank {
 
 	// commands from the NewBank customer are processed in this method
 	//todo -- i dont think this should return string -- this should be a void
-	public synchronized String processRequest(CustomerID customer, String request) {
+    	public synchronized String processRequest(CustomerID customer, String request) {
 		if(customers.containsKey(customer.getKey())) {
 			switch(request) {
 			    case "SHOWMYACCOUNTS" : return showMyAccounts(customer);
 			    case "NEWACCOUNT" :
 			        System.out.println("need to create NEWACCOUNT method");
-					return "Dear client we need to create NEWACCOUNT method";
+					customers.get(customer.getKey()).addAccount(new Account("Steve", 555.0));
+			        return "This is a test to prove we can add a second account, we'll want to call a func in reality";
+
 			    case "MOVE" :
 				    System.out.println("need to create MOVE method");
 					return "Dear client we need to create MOVE method";
