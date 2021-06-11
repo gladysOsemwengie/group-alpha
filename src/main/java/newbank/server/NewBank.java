@@ -1,13 +1,13 @@
 package newbank.server;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+
+import static java.util.Arrays.asList;
 
 public class NewBank {
 	
 	private static final NewBank bank = new NewBank();
-	private HashMap<String,Customer> customers;
+	private HashMap<String, List<Customer>> customers;
 
 	private static final HashMap<String, String> customerAuthenticationDetails = new HashMap<String, String>(){
 		{
@@ -26,15 +26,15 @@ public class NewBank {
 	private void addTestData() {
 		Customer bhagy = new Customer();
 		bhagy.addAccount(new Account("Main", 1000.0));
-		customers.put("Bhagy", bhagy);
+		customers.put("Bhagy", Collections.singletonList(bhagy));
 		
 		Customer christina = new Customer();
 		christina.addAccount(new Account("Savings", 1500.0));
-		customers.put("Christina", christina);
+		customers.put("Christina", Collections.singletonList(christina));
 		
 		Customer john = new Customer();
 		john.addAccount(new Account("Checking", 250.0));
-		customers.put("John", john);
+		customers.put("John", Collections.singletonList(john));
 	}
 
 	//todo -this returns the customer and password details
@@ -66,8 +66,9 @@ public class NewBank {
 			    case "SHOWMYACCOUNTS" : return showMyAccounts(customer);
 			    case "NEWACCOUNT" :
 			        System.out.println("need to create NEWACCOUNT method");
-					customers.get(customer.getKey()).addAccount(new Account("Steve", 555.0));
-			        return "This is a test to prove we can add a second account, we'll want to call a func in reality";
+					//customers.get(customer.getKey()).addAccount(new Account("Steve", 555.0));
+
+					return createNewAccount(customer);
 
 			    case "MOVE" :
 				    System.out.println("need to create MOVE method");
@@ -82,7 +83,22 @@ public class NewBank {
 	}
 	
 	private String showMyAccounts(CustomerID customer) {
-		return (customers.get(customer.getKey())).accountsToString();
+		List<String> accountstemp = new ArrayList<>();
+		customers.get(customer.getKey()).forEach(customer1 -> {
+			accountstemp.add(customer1.accountsToString());
+		});
+		return accountstemp.toString();
+	}
+
+	private String createNewAccount(CustomerID customer) {
+		//questions to get account type and opening balance
+		Customer customerName = new Customer();
+		customerName.addAccount(new Account("SavingsTest", 1000.0));
+		customerName.addAccount(new Account("SavingsTest2", 2000.0));
+
+		customers.put(customer.getKey(),asList(customerName));
+		//customers.get(customer.getKey()).addAccount(new Account("Savings", 555.0));
+		return showMyAccounts(customer);
 	}
 
 }
