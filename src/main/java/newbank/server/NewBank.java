@@ -66,16 +66,16 @@ public class NewBank {
 			    case "SHOWMYACCOUNTS" : return showMyAccounts(customer);
 			    case "NEWACCOUNT" :
 			        System.out.println("need to create NEWACCOUNT method");
-					//customers.get(customer.getKey()).addAccount(new Account("Steve", 555.0));
+					//customers.get(customer.getKey()).addAccount(new Account("Saving Acc", 555.0));
 
 					return createNewAccount(customer);
 
 			    case "MOVE" :
 				    System.out.println("need to create MOVE method");
-					return "Dear client we need to create MOVE method";
-			    case "PAY" :
+					return moveCashBetweenAccounts(customer);
+				case "PAY":
 					System.out.println("need to create PAY method");
-					return "Dear client we need to create the PAY method";
+					return payAnotherUser(customer);
 			    default : return "That command does not exist please try again";
 			}
 		}
@@ -90,15 +90,48 @@ public class NewBank {
 		return accountstemp.toString();
 	}
 
+	// THIS IS THE ORIGINAL SHOWMYACCOUNT FUNCTION
+	/*	private String showMyAccounts(CustomerID customer) {
+
+		return (customers.get(customer.getKey())).accountsToString();
+	}
+	*/
 	private String createNewAccount(CustomerID customer) {
 		//questions to get account type and opening balance
+		//WHAT SORT OF ACCOUNT DO YOU WANT SAVINGS ISA DEPOSIT
+		// CAPTURE ANSWER INTO
+
+		//customers.get(customer.getKey()).;
 		Customer customerName = new Customer();
+
 		customerName.addAccount(new Account("SavingsTest", 1000.0));
 		customerName.addAccount(new Account("SavingsTest2", 2000.0));
-
-		customers.put(customer.getKey(),asList(customerName));
+		return customerName.accountsToString();
+		//customerName.addAccount("Fred", 44.44);
+		//customers.put(customer.getKey(),asList(customerName));
+		//customers.put(customer.getKey(), Collections.singletonList(customerName));
 		//customers.get(customer.getKey()).addAccount(new Account("Savings", 555.0));
-		return showMyAccounts(customer);
+		//return showMyAccounts(customer);
 	}
+
+	private String moveCashBetweenAccounts (CustomerID customer) {
+		//Write the SUDO code here we need to know the accounts they want to move money from and to.
+		//Micheal said it had to be from the command line but i assume we can give prompts, like list of valid accounts
+
+		Customer customerName = new Customer();
+		return customerName.accountsToString();
+
+	}
+
+	private String payAnotherUser (CustomerID customer) {
+		//Write the SUDO code here we need to know the accounts they want to move money from and who to and account
+		// .
+
+
+		Customer customerName = new Customer();
+		return customerName.accountsToString();
+
+	}
+
 
 }
