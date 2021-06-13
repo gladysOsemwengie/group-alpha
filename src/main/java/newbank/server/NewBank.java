@@ -97,10 +97,12 @@ public class NewBank {
 	}
 	*/
 	private String createNewAccount(CustomerID customer) {
-		//questions to get account type and opening balance
-		//WHAT SORT OF ACCOUNT DO YOU WANT SAVINGS ISA DEPOSIT
-		// CAPTURE ANSWER INTO
+		//Questions to get account type and opening balance
 
+		//1- WHAT TYPE OF ACCOUNT DO YOU WANT SAVINGS / ISA or CURRENT and HOW MUCH DO YOU WANT TO DEPOSIT? e.g. SAVINGS 200.00
+		//2- CAPTURE RESPONSE FROM COMMAND LINE
+		//3- SEND RESPONSE TO METHOD TO CREATE THE ACCOUNT
+		//4- PRINT ALL ACCOUNTS RELATED TO USER
 		//customers.get(customer.getKey()).;
 		Customer customerName = new Customer();
 
@@ -117,6 +119,13 @@ public class NewBank {
 	private String moveCashBetweenAccounts (CustomerID customer) {
 		//Write the SUDO code here we need to know the accounts they want to move money from and to.
 		//Micheal said it had to be from the command line but i assume we can give prompts, like list of valid accounts
+		//1 - PRINT LIST OF ALL ACCOUNTS - SHOWMYACCOUNTS
+		//2 - PRINT STATEMENT : PLEASE ENTER the AMOUNT of Money you want to move followed by Move FROM Account and Move TO Account e.g. <Amount> <From> <To>
+		//3 - CAPTURE RESPONSE for Amount
+		//4 - CAPTURE RESPONSE for (FROM) ACCOUNT
+		//5 - CAPTURE RESPONSE for (TO) ACCOUNT
+		//6 - CALCULATE THE UPDATED BALANCES (ignore check for available balance) - optional
+		//7 - PRINT UPDATED SHOWMYACCOUNTS with updated balances
 
 		Customer customerName = new Customer();
 		return customerName.accountsToString();
