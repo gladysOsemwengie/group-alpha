@@ -1,13 +1,13 @@
 package newbank.server;
 
-import java.util.*;
-
-import static java.util.Arrays.asList;
+import java.util.HashMap;
+import java.util.Scanner;
 
 public class NewBank {
 	
 	private static final NewBank bank = new NewBank();
-	private HashMap<String, List<Customer>> customers;
+	private HashMap<String, Customer> customers;
+	private HashMap<CustomerID, Customer> customersValues;
 
 	private static final HashMap<String, String> customerAuthenticationDetails = new HashMap<String, String>(){
 		{
@@ -21,27 +21,47 @@ public class NewBank {
 	private NewBank() {
 		customers = new HashMap<>();
 		addTestData();
-	}
-	
-	private void addTestData() {
-		Customer bhagy = new Customer();
-		bhagy.addAccount(new Account("Main", 1000.0));
-		customers.put("Bhagy", Collections.singletonList(bhagy));
-		
-		Customer christina = new Customer();
-		christina.addAccount(new Account("Savings", 1500.0));
-		customers.put("Christina", Collections.singletonList(christina));
-		
-		Customer john = new Customer();
-		john.addAccount(new Account("Checking", 250.0));
-		customers.put("John", Collections.singletonList(john));
+		this.customersValues = initialCustomerValues();
 	}
 
-	//todo -this returns the customer and password details
-	public static Map<String, String> getCustomerAuthenticationDetails(){
-		return Collections.unmodifiableMap(customerAuthenticationDetails);
+	private HashMap<CustomerID, Customer> initialCustomerValues() {
+		HashMap<CustomerID, Customer> newBankCustomers = new HashMap<>();
+		CustomerID bhagyCustomerId = new CustomerID("Bhagy");
+		Customer bhagyCustomer = new Customer(bhagyCustomerId);
+		bhagyCustomer.addAccount(new Account("Main", 1000.0));
+
+		CustomerID christinaCustomerId = new CustomerID("Christina");
+		Customer christinaCustomer = new Customer(christinaCustomerId);
+		christinaCustomer.addAccount(new Account("Savings", 1500.0));
+
+		CustomerID johnCustomerId = new CustomerID("John");
+		Customer johnCustomer = new Customer(johnCustomerId);
+		johnCustomer.addAccount(new Account("Checking", 250.0));
+
+		newBankCustomers.put(bhagyCustomerId, bhagyCustomer);
+		newBankCustomers.put(christinaCustomerId, christinaCustomer);
+		newBankCustomers.put(johnCustomerId,johnCustomer);
+		return newBankCustomers;
 	}
-	
+
+	private void addTestData() {
+		Customer bhagy = new Customer(new CustomerID("Bhagy"));
+		bhagy.addAccount(new Account("Main", 1000.0));
+		customers.put("Bhagy", bhagy);
+		
+		Customer christina = new Customer(new CustomerID("Christina"));
+		christina.addAccount(new Account("Savings", 1500.0));
+		customers.put("Christina", christina);
+		
+		Customer john = new Customer(new CustomerID("John"));
+		john.addAccount(new Account("Checking", 250.0));
+		customers.put("John", john);
+	}
+
+	public HashMap<CustomerID, Customer> getCustomersValues() {
+		return customersValues;
+	}
+
 	public static NewBank getBank() {
 		return bank;
 	}
@@ -59,23 +79,26 @@ public class NewBank {
 	}
 
 	// commands from the NewBank customer are processed in this method
-	//todo -- i dont think this should return string -- this should be a void
     	public synchronized String processRequest(CustomerID customer, String request) {
-		if(customers.containsKey(customer.getKey())) {
+		if(customersValues.keySet().stream().anyMatch(customerID -> customerID.getKey().equals(customer.getKey()))) {
 			switch(request) {
-			    case "SHOWMYACCOUNTS" : return showMyAccounts(customer);
+			    case "SHOWMYACCOUNTS" :
+			    	//return showMyAccounts(customer);
+					return anotherShowMyAccounts(customer);
 			    case "NEWACCOUNT" :
 			        System.out.println("need to create NEWACCOUNT method");
-					//customers.get(customer.getKey()).addAccount(new Account("Saving Acc", 555.0));
 
-					return createNewAccount(customer);
+					//return createNewAccount(customer);
+					return anotherCreateNewAccount(customer);
 
 			    case "MOVE" :
 				    System.out.println("need to create MOVE method");
-					return moveCashBetweenAccounts(customer);
+					//return moveCashBetweenAccounts(customer);
+					return anotherMove(customer);
 				case "PAY":
 					System.out.println("need to create PAY method");
-					return payAnotherUser(customer);
+					return pay(customer);
+					//return payAnotherUser(customer);
 			    default : return "That command does not exist please try again";
 			}
 		}
@@ -83,11 +106,7 @@ public class NewBank {
 	}
 	
 	private String showMyAccounts(CustomerID customer) {
-		List<String> accountstemp = new ArrayList<>();
-		customers.get(customer.getKey()).forEach(customer1 -> {
-			accountstemp.add(customer1.accountsToString());
-		});
-		return accountstemp.toString();
+		return customers.get(customer.getKey()).getAccounts().toString();
 	}
 
 	// THIS IS THE ORIGINAL SHOWMYACCOUNT FUNCTION
@@ -96,29 +115,103 @@ public class NewBank {
 		return (customers.get(customer.getKey())).accountsToString();
 	}
 	*/
+
+	private String anotherShowMyAccounts(CustomerID customerId){
+		Customer customerValue = getCustomersValues().values().stream().filter(customer -> customer.getCustomerId().getKey().equals(customerId.getKey()))
+				.findAny().orElse(null);
+		if (null != customerValue){
+			return customerValue.getAccounts().toString();
+		}else{
+			return "No customer exists for this customer name " + customerId.getKey();
+		}
+	}
+
+	private String anotherMove(CustomerID customerId){
+		Scanner sc = new Scanner(System.in);
+		Customer customerValue = getCustomersValues().values().stream().filter(customer -> customer.getCustomerId().getKey().equals(customerId.getKey()))
+				.findAny().orElse(null);
+
+		//Get move details
+		System.out.println("Which account to do you want to move money to");
+		String toAccountName = sc.next();
+		Account toAccount = checkAccountExists(toAccountName, customerValue);
+		System.out.println("Which account to do you want to move money from");
+		String fromAccountName = sc.next();
+		Account fromAccount = checkAccountExists(fromAccountName, customerValue);
+		System.out.println("Enter amount you wish to transfer");
+		double transferAmount = sc.nextDouble();
+
+		//the move logic starts
+		if (null != fromAccount && fromAccount.getBalance() > 0){
+			assert toAccount != null;
+			double amountToBeAdded = toAccount.getBalance() + transferAmount;
+			toAccount.setBalance(amountToBeAdded);
+			//then reduce the balance of the from account
+			double amountToBeRemoved = fromAccount.getBalance() - transferAmount;
+			fromAccount.setBalance(amountToBeRemoved);
+
+			//then update newBank Customer values to reflect change
+			assert customerValue != null;
+			updateNewBankCustomerValues(customerValue, fromAccount);
+
+			return toAccount.getAccountName() + " has been paid, Your Old " + fromAccountName +  " balance is now " + fromAccount.getBalance();
+
+		}else {
+			return "Insufficient Funds in your account";
+		}
+
+	}
+
+	private String anotherCreateNewAccount(CustomerID customerId){
+		Scanner sc = new Scanner(System.in);
+		Customer customerValue = getCustomersValues().values().stream().filter(customer -> customer.getCustomerId().getKey().equals(customerId.getKey()))
+				.findAny().orElse(null);
+
+		//Get new account details
+		System.out.println("Enter account name");
+		String accountName = sc.next();
+		if (checkAccountAlreadyExists(accountName, customerValue)){
+			System.out.println("An account with the name " + accountName + " already exists");
+		}else{
+			System.out.println("Enter amount you want to open with");
+		}
+		double openingAmount = sc.nextDouble();
+		if (null != customerValue){
+			Account newAccount = new Account(accountName, openingAmount);
+			//update customer values DB
+			updateNewBankCustomerValues(customerValue, newAccount);
+			return "A new account called " + accountName + " has been created for " + customerValue.getCustomerId().getKey();
+		}else{
+			return "Could not create new account";
+		}
+	}
+
+	private boolean checkAccountAlreadyExists(String accountName, Customer customerValue) {
+		return null != customerValue && customerValue.getAccounts().stream().anyMatch(account -> account.getAccountName().equals(accountName));
+	}
+
 	private String createNewAccount(CustomerID customer) {
 		//questions to get account type and opening balance
 		//WHAT SORT OF ACCOUNT DO YOU WANT SAVINGS ISA DEPOSIT
 		// CAPTURE ANSWER INTO
 
 		//customers.get(customer.getKey()).;
-		Customer customerName = new Customer();
+		Customer customerName = new Customer(customer);
 
 		customerName.addAccount(new Account("SavingsTest", 1000.0));
 		customerName.addAccount(new Account("SavingsTest2", 2000.0));
+		//return customerName.accountsToString();
+		customers.put(customer.getKey(), customerName);
+
 		return customerName.accountsToString();
-		//customerName.addAccount("Fred", 44.44);
-		//customers.put(customer.getKey(),asList(customerName));
-		//customers.put(customer.getKey(), Collections.singletonList(customerName));
-		//customers.get(customer.getKey()).addAccount(new Account("Savings", 555.0));
-		//return showMyAccounts(customer);
+
 	}
 
 	private String moveCashBetweenAccounts (CustomerID customer) {
 		//Write the SUDO code here we need to know the accounts they want to move money from and to.
 		//Micheal said it had to be from the command line but i assume we can give prompts, like list of valid accounts
 
-		Customer customerName = new Customer();
+		Customer customerName = new Customer(customer);
 		return customerName.accountsToString();
 
 	}
@@ -128,9 +221,82 @@ public class NewBank {
 		// .
 
 
-		Customer customerName = new Customer();
+		Customer customerName = new Customer(customer);
 		return customerName.accountsToString();
 
+	}
+
+	private String pay(CustomerID customerId){
+		Scanner sc = new Scanner(System.in);
+		Customer fromCustomer = getCustomersValues().values().stream().filter(customer -> customer.getCustomerId().getKey().equals(customerId.getKey()))
+				.findAny().orElse(null);
+
+		//Get details about payment
+		System.out.println("Enter customer name you want to pay to");
+		String customerName = sc.next();
+		Customer toCustomer =  checkCustomerExists(customerName);
+		System.out.println("Enter customer account name you want to pay to");
+		String toAccountName = sc.next();
+		Account toAccount = checkAccountExists(toAccountName, toCustomer);
+		System.out.println("Enter which of your account names you want to pay from");
+		String fromAccountName = sc.next();
+		//Customer fromCustomer = checkCustomerExists(customer.getCustomerId().getKey());
+		Account fromAccount = checkAccountExists(fromAccountName, fromCustomer);
+		System.out.println("Enter amount you wish to transfer");
+		double transferAmount = sc.nextDouble();
+
+		//the pay logic starts
+		if (null != fromAccount && fromAccount.getBalance() > 0){
+			assert toAccount != null;
+			double amountToBeAdded = toAccount.getBalance() + transferAmount;
+			toAccount.setBalance(amountToBeAdded);
+			//then reduce the balance of the from account
+			double amountToBeRemoved = fromAccount.getBalance() - transferAmount;
+			fromAccount.setBalance(amountToBeRemoved);
+
+			//then update newBank Customer values to reflect change
+			updateNewBankCustomerValues(fromCustomer, fromAccount);
+			updateNewBankCustomerValues(toCustomer, toAccount);
+
+			return toAccount.getAccountName() + " has been paid, Your balance is now " + fromAccount.getBalance();
+
+		}else {
+			return "Insufficient Funds in your account";
+		}
+	}
+
+	/**
+	 * if account exists for customer update the account details else, add a new account for the customer
+	 * @param customer
+	 * @param account
+	 */
+	private void updateNewBankCustomerValues(Customer customer, Account account) {
+		assert customer != null;
+		if (customer.getAccounts().contains(account)){
+			getCustomersValues().get(customer.getCustomerId()).updateAccount(account);
+		}else{
+			getCustomersValues().get(customer.getCustomerId()).addAccount(account);
+		}
+
+	}
+
+	private Account checkAccountExists(String accountName, Customer customer) {
+		if (null != customer && customer.getAccounts().stream().anyMatch(account -> account.getAccountName().equals(accountName))){
+			return customer.getAccounts().stream().filter(account -> account.getAccountName().equals(accountName))
+					.findAny().orElse(null);
+		}else{
+			System.out.println("Account with that name " + accountName + " doesnt exist");
+			return null;
+		}
+	}
+
+	private Customer checkCustomerExists(String customerName) {
+		if (getCustomersValues().keySet().stream().anyMatch(custId -> custId.getKey().equals(customerName))){
+			return getCustomersValues().values().stream().filter(customer -> customer.getCustomerId().getKey().equals(customerName)).findAny().orElse(null);
+		}else{
+			System.out.println("Customer with that name " + customerName + " doesnt exist");
+			return null;
+		}
 	}
 
 

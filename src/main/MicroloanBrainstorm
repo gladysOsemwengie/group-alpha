@@ -1,0 +1,27 @@
+1. Create a Loan Class --> Loan(CustomerID, LoanID, LoanAmount, LoanInterest, LoanYears);
+2. Loan Db --> A Hashmap with <CustomerID, Loan>
+3. Switch Statement requestName --> MICROLOAN
+4. MICROLOAN --> returns requestLoan(customerID);
+5. requestLoan(customerID){
+    Sout(List of loans available + Loan Db)
+    Sout (Which loanID do you wish to select)
+    int loanID = save loanID;
+    checkLoanDetailsForAmount(loanID);
+    sout(Do you wish to proceed);
+    String decision = save decision;
+    checkDecision(decision);
+}
+6. checkLoanDetailsForAmount(loanID){
+    Loan Db.get(loanID);
+    Monthly Rate = CalculateMonthlyRate();
+    sout(For this loan, at this rate, for this number of years, monthly rate will be + Rate)
+}
+7. checkDecision(decision){
+    if (YES.equals(decision)){
+       Sout(Which account do you wish to pay mony to);
+       String accountName = save accountName;
+       updateNewBankCustomerValues(customerValue, fromAccount);
+    }else{
+        //decide what to do here
+    }
+}
