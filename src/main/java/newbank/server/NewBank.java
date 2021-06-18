@@ -186,7 +186,12 @@ public class NewBank {
 		}
 	}
 
-	private boolean checkAccountAlreadyExists(String accountName, Customer customerValue) {
+
+
+
+
+
+	public boolean checkAccountAlreadyExists(String accountName, Customer customerValue) {
 		return null != customerValue && customerValue.getAccounts().stream().anyMatch(account -> account.getAccountName().equals(accountName));
 	}
 
