@@ -41,7 +41,7 @@ public class NewBankClientHandler extends Thread{
                     }
 					else {
                         System.out.println("Request from " + customer.getKey());
-                        String responce = bank.processRequest(customer, request);
+                        String responce = bank.processRequest(customer, request,in, out);
                         out.println(responce);
                     }
 				}
@@ -63,25 +63,6 @@ public class NewBankClientHandler extends Thread{
 		}
 	}
 
-    private String anotherCreateNewAccountSC(CustomerID customerId){
-
-        out.println("Enter account name");
-        String accountName = sc.next();
-        if (bank.checkAccountAlreadyExists(accountName, customerValue)){
-            System.out.println("An account with the name " + accountName + " already exists");
-        }else{
-            System.out.println("Enter amount you want to open with");
-        }
-        double openingAmount = sc.nextDouble();
-        if (null != customerValue){
-            Account newAccount = new Account(accountName, openingAmount);
-            //update customer values DB
-            updateNewBankCustomerValues(customerValue, newAccount);
-            return "A new account called " + accountName + " has been created for " + customerValue.getCustomerId().getKey();
-        }else{
-            return "Could not create new account";
-        }
-    }
 
 
 }
