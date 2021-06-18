@@ -1,0 +1,23 @@
+//Loan
+
+//-annualInterestRate: double
+//-numberOfYears: int
+//-loanAmount: double
+//-loanDate: Date
+
+//Construct: 
+//+loan()
+//+loan(annualInterestRate: double, numberOfYears: int, loanAmount: double)
+
+//+getAnnualInterestRate(): double
+//+getNumberofYears(): int
+//+getLoanAmount(): double
+//+getLoanDate(): Date
+
+//+setAnnualInterestRate(annualInterestRate: double): void
+//+setNumberOfYears(numberOfYears: int): void
+//+setLoanAmout(loanAmount:double): void
+
+//+getMonthlyPayment(): double
+//+getTotalPayment(): double
+//
