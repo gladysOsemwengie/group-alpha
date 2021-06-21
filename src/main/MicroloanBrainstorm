@@ -24,4 +24,6 @@
     }else{
         //decide what to do here
     }
+ 8. ErrorChecking -- Check that you are not borrowing from yourself
+ 9. ErrorChecking --- Check that the loaner has the required loan amount
 }
