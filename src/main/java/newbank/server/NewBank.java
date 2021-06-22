@@ -3,6 +3,7 @@ package newbank.server;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.math.BigDecimal;
 import java.util.HashMap;
 
 
@@ -114,19 +115,62 @@ public class NewBank {
                     return showMyAccounts(customer);
                 case "NEWACCOUNT":
                     return createNewAccount(customer, in, out);
-
                 case "MOVE":
-
                     return move(customer, in, out);
                 case "PAY":
-
                     return pay(customer, in, out);
-
+                case "MICROLOAN":
+                    return requestLoan(customer, in, out);
                 default:
                     return "That command does not exist please try again";
             }
         }
         return "FAIL outside";
+    }
+
+    private String requestLoan(CustomerID customerId, BufferedReader in, PrintWriter out) throws IOException {
+        Customer customerValue = getCustomersValues().values().stream().filter(customer -> customer.getCustomerId().getKey().equals(customerId.getKey()))
+                .findAny().orElse(null);
+
+        out.println("The current available loans are: ");
+        getLoanDB().values().forEach(out::println);
+        out.println("Which loan ID will you like to select? ");
+        int loanId = Integer.parseInt(in.readLine());
+        BigDecimal monthlyRepayments = checkLoanDetailsForAmount(loanId);
+        out.println("For this loan, monthly payment will be: " + monthlyRepayments );
+        out.println("Do you wish to proceed, if so type YES else N0");
+        String decision = in.readLine();
+        if (checkDecision(decision)){
+            out.println("Which account of yours do you wish to make your payments from? ");
+            String accountName = in.readLine();
+            Account fromAccount = checkAccountExists(accountName, customerValue);
+            assert customerValue != null;
+
+            //then reduce the balance of the from account
+            assert fromAccount != null;
+            BigDecimal balance = BigDecimal.valueOf(fromAccount.getBalance());
+            BigDecimal result = balance.subtract(monthlyRepayments).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+            double amountToBeRemoved = result.doubleValue();
+            fromAccount.setBalance(amountToBeRemoved);
+            updateNewBankCustomerValues(customerValue, fromAccount);
+            return "Your " + accountName + " balance is now " + fromAccount.getBalance();
+        }else{
+            return "we are yet to determine what to do in the case of a No decision-- give us time :)";
+        }
+    }
+
+    private boolean checkDecision(String decision) {
+        return "YES".equalsIgnoreCase(decision);
+    }
+
+    private BigDecimal checkLoanDetailsForAmount(int loanId) {
+        Loan loan = getLoanDB().values().stream().filter(loanValue -> loanValue.getloanID() == loanId).findAny().orElse(null);
+        if(null != loan){
+            return loan.getMonthlyRepayment();
+        }else{
+            System.out.println("Incorrect loan Id selected, -- No loan for that ID "  + loanId);
+            return null;
+        }
     }
 
 

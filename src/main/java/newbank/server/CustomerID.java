@@ -10,4 +10,9 @@ public class CustomerID {
 	public String getKey() {
 		return key;
 	}
+
+	@Override
+	public String toString() {
+		return "'" + key + '\'';
+	}
 }

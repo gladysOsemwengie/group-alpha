@@ -1,5 +1,7 @@
 package newbank.server;
 
+import java.math.BigDecimal;
+
 public class Loan {
     private CustomerID customerID;
     private int loanID;
@@ -51,6 +53,13 @@ public class Loan {
 
     }
 
+    public BigDecimal getMonthlyRepayment() {
+        double rate = loanInterest/12.0;
+        double totalNumOfMonths = 12.0 * loanYears;
+        double finalAmt =  (loanAmount*rate) / (1 - Math.pow(1 + rate, -totalNumOfMonths));
+        return new BigDecimal(finalAmt).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+    }
+
     // Setters
 
     public void setCustomerID (CustomerID customerID) {
@@ -76,12 +85,11 @@ public class Loan {
 
     @Override
     public String toString() {
-        return "Loan{" +
-                "customerID=" + customerID +
-                ", loanID=" + loanID +
+        return "Loan ==>" +
+                "loanID=" + loanID +
+                ", customerID=" + customerID +
                 ", loanInterest=" + loanInterest +
                 ", loanAmount=" + loanAmount +
-                ", loanYears=" + loanYears +
-                '}';
+                ", loanYears=" + loanYears ;
     }
 }
